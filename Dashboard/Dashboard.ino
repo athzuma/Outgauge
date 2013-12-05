@@ -1,30 +1,6 @@
-x//X-sim3dashboard v1  (using TM1638 display and Arduino Nano v3)
-
-// Made by TronicGr (Thanos) 4-26-2012 for X-sim3
-
-// Shared as Public Domain
-
-
-
-// Serial parser example: R~a01~~70~S~a02~G~a03~
-
-// Where:
-
-// ~a01~ is 16bit value for rpm
-
-// ~70~ is data value parameter for RPM_MAX divided by 1000 to fit into a byte so actual value is 9500
-
-// ~a02~ is 16bit value for speed
-
-// ~a03~ is 8bit value for gear / neutral / reverse
-
-
-
-// You can set the USO pause safely to 10ms for nice fast refresh rates!
-
-
-
-
+int ON = 1;
+int OFF = 0;
+int cont;
 
 #include <TM1638.h> //can be downloaded from http://code.google.com/p/tm1638-library/
 
@@ -82,113 +58,94 @@ void setup() {
 
   pinMode(ledPin, OUTPUT);
 
-//Les broches sont toutes des sorties
+  //Les broches sont toutes des sorties
 
-pinMode(bit_A, OUTPUT);
+  pinMode(bit_A, OUTPUT);
 
-pinMode(bit_B, OUTPUT);
+  pinMode(bit_B, OUTPUT);
 
-pinMode(bit_C, OUTPUT);
+  pinMode(bit_C, OUTPUT);
 
-pinMode(bit_D, OUTPUT);
+  pinMode(bit_D, OUTPUT);
 
-pinMode(bit_E, OUTPUT);
+  pinMode(bit_E, OUTPUT);
 
-pinMode(bit_F, OUTPUT);
-
-
-
-//Les broches sont toutes mises ‡ l'Ètat bas pour le decodeur BCD et haut pour piloter neutral et reverse
-
-digitalWrite(bit_A, LOW);
-
-digitalWrite(bit_B, LOW);
-
-digitalWrite(bit_C, LOW);
-
-digitalWrite(bit_D, LOW);
-
-digitalWrite(bit_E, HIGH);
-
-digitalWrite(bit_F, HIGH);
+  pinMode(bit_F, OUTPUT);
 
 
 
-// initialize the screen:
+  //Les broches sont toutes mises ‡ l'Ètat bas pour le decodeur BCD et haut pour piloter neutral et reverse
 
-module1.clearDisplay();              //clears the display from garbage if any
+  digitalWrite(bit_A, LOW);
 
-String name = "TronicGr";           //sets a custom logo start up banner
+  digitalWrite(bit_B, LOW);
 
-module1.setDisplayToString(name);    //prints the banner
+  digitalWrite(bit_C, LOW);
 
-name = "Thanos";           //sets a custom logo start up banner
+  digitalWrite(bit_D, LOW);
 
+  digitalWrite(bit_E, HIGH);
 
-
-module1.setLEDs(0b10000000 | 0b00000001<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11000000 | 0b00000011<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11100000 | 0b00000111<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11110000 | 0b00001111<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111000 | 0b00011111<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111100 | 0b00111111<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111110 | 0b01111111<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111111 | 0b11111111<< 8 );
-
-delay(200);
-
-module1.setLEDs(0b00000000 | 0b00000000<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111111 | 0b11111111<< 8 );
-
-delay(100);
-
-module1.setLEDs(0b00000000 | 0b00000000<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111111 | 0b11111111<< 8 );
-
-delay(100);
-
-module1.setLEDs(0b00000000 | 0b00000000<< 8 );
-
-delay(50);
-
-module1.setLEDs(0b11111111 | 0b11111111<< 8 );
-
-delay(100);
-
-module1.setLEDs(0b00000000 | 0b00000000<< 8 );
-
-delay(1500);                        //small delay 1.5 sec 
-
-module1.clearDisplay();              //clears the 1st display
+  digitalWrite(bit_F, HIGH);
 
 
+
+  // initialize the screen:
+  limpaDisplay();
+  display7str('Athila eh Foda!');
+
+  name = "Thanos";           //sets a custom logo start up banner
+
+
+  barraLED(1, ON);
+  barraLED(8, ON);
+
+  delay(50);
+
+  barraLED(2, ON);
+  barraLED(7, ON);
+
+  delay(50);
+
+  barraLED(3, ON);
+  barraLED(6, ON);
+
+  delay(50);
+
+  barraLED(4, ON);
+  barraLED(5, ON);
+
+  delay(50);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, OFF);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, ON);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, OFF);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, ON);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, OFF);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, ON);
+  }
+  delay(200);
+  for (cont=1;cont<=8;cont++){
+    barraLED(cont, OFF);
+  }
+  delay(1500);                        //small delay 1.5 sec 
+
+  limpaDisplay();
 
 }
 
@@ -521,7 +478,23 @@ void afficher(char chiffre)
 }
 
 
+//#################
+//Novas Funcoes
 
+void display7int(int n){
+  
+  
+}
 
+void display7str(String text){
+  
+  
+}
 
+void limpaDisplay(){
+  
+}
 
+void barraLED(int led, int estado){
+  
+}
