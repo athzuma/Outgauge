@@ -4,10 +4,17 @@
 int ON = 1;
 int OFF = 0;
 int cont;
+int marcha;
 
-int VMotorRPM = 1;
-int VMotorVELO = 1;
+int VMotorRPM = 11;
+int VMotorVELO = 10;
 
+int linha1 = 2;
+int linha2 = 3;
+int linha3 = 4;
+int coluna1 = 5;
+int coluna2 = 6;
+int coluna3 = 7;
 
 Servo motorRPM;
 Servo motorVELO;
@@ -20,27 +27,6 @@ motorVELO.attach(VMotorVELO);
 
 //motorRPM.write(GRAUS);
 
-//dÈfinition des broches du dÈcodeur 7 segments (vous pouvez changer
-
-//les numÈros si bon vous semble)
-
-const int bit_A= 6;
-
-const int bit_B= 7;
-
-const int bit_C= 8;
-
-const int bit_D= 9;
-
-//Definition des Pin pour Affichage Neutral et reverse
-
-const int bit_E= 10;
-
-const int bit_F= 11;
-
-
-
-const int ledPin =  13;   // the number of the LED pin
 
 int ledState = LOW;             // ledState used to set the LED
 
@@ -57,53 +43,8 @@ long interval = 40;           // interval at which to blink (milliseconds)
 
 
 void setup() {
-
-  //Create Serial Object
-
-  Serial.begin(125000); 
-
-  //Serial.begin(115200);
-
-  pinMode(ledPin, OUTPUT);
-
-  //Les broches sont toutes des sorties
-
-  pinMode(bit_A, OUTPUT);
-
-  pinMode(bit_B, OUTPUT);
-
-  pinMode(bit_C, OUTPUT);
-
-  pinMode(bit_D, OUTPUT);
-
-  pinMode(bit_E, OUTPUT);
-
-  pinMode(bit_F, OUTPUT);
-
-
-
-  //Les broches sont toutes mises ‡ l'Ètat bas pour le decodeur BCD et haut pour piloter neutral et reverse
-
-  digitalWrite(bit_A, LOW);
-
-  digitalWrite(bit_B, LOW);
-
-  digitalWrite(bit_C, LOW);
-
-  digitalWrite(bit_D, LOW);
-
-  digitalWrite(bit_E, HIGH);
-
-  digitalWrite(bit_F, HIGH);
-
-
-
-  // initialize the screen:
-  limpaDisplay();
-  display7str('Athila eh Foda!');
-
-  name = "Thanos";           //sets a custom logo start up banner
-
+  //Serial.begin(125000); 
+  Serial.begin(115200);
 
   barraLED(1, ON);
   barraLED(8, ON);
@@ -151,10 +92,7 @@ void setup() {
   for (cont=1;cont<=8;cont++){
     barraLED(cont, OFF);
   }
-  delay(1500);                        //small delay 1.5 sec 
-
-  limpaDisplay();
-
+  delay(1500);
 }
 
 
@@ -218,29 +156,17 @@ void loop() {
 
   if (geardata == 1)
   {
-    gear = gear - 127;                  // offset the 0 value in 8-bit 
-    if (gear >= 1 and gear <10 )
-    {
-      afficher(gear);//appel de la fonction affichage avec envoi du nombre ‡ afficher
+    if (gear == 0) {
+      displayRE();
+      //Re
     }
-    if (gear == 0)
-    {//Pour aficher neutral le caractere g de l`afficheur est bas et les autres haut
-      digitalWrite(bit_A, HIGH);
-      digitalWrite(bit_B, HIGH);
-      digitalWrite(bit_C, HIGH);
-      digitalWrite(bit_D, HIGH);
-      digitalWrite(bit_E, LOW);
-      digitalWrite(bit_F, HIGH);
+    if (gear == 1) {
+      displayMORTO();
+      //ponto morto
     }
-
-    if (gear == 255)
-    {                        // -1 that reprecents reverse rollover to 255 so...
-      digitalWrite(bit_A, HIGH);
-      digitalWrite(bit_B, HIGH);
-      digitalWrite(bit_C, HIGH);
-      digitalWrite(bit_D, HIGH);
-      digitalWrite(bit_E, LOW);
-      digitalWrite(bit_F, LOW);
+    if (gear > 1) {
+      marcha = gear - 1;
+      displayMARCHA(marcha);
     }
     geardata=0;
   }
@@ -350,44 +276,6 @@ void loop() {
   } 
 }//Fim do loop
 
-//fonction Ècrivant sur un seul afficheur
-
-void afficher(char chiffre)
-
-{
-  //Les broches sont toutes mises ‡ l'Ètat bas et haut neutral reverse
-  digitalWrite(bit_A, LOW);
-  digitalWrite(bit_B, LOW);
-  digitalWrite(bit_C, LOW);
-  digitalWrite(bit_D, LOW);
-  digitalWrite(bit_E, HIGH);
-  digitalWrite(bit_F, HIGH);
-  //on allume les chiffres necessaires
-  if(chiffre >= 8)
-  {
-    digitalWrite(bit_D, HIGH);
-    chiffre= chiffre - 8;
-  }
-  if(chiffre>= 4)
-  {
-    digitalWrite(bit_C, HIGH);
-    chiffre= chiffre - 4;
-  }
-  if(chiffre >= 2)
-  {
-    digitalWrite(bit_B, HIGH);
-    chiffre= chiffre - 2;
-  }
-  if(chiffre >= 1)
-  {
-    digitalWrite(bit_A, HIGH);
-    chiffre= chiffre - 1;
-  }
-}
-
-
-//#################
-//Novas Funcoes
 
 void display7int(int n, int valor){
   
@@ -400,6 +288,10 @@ void display7str(String text){
 }
 
 void limpaDisplay(){
+  
+}
+
+void displayMARCHA(){
   
 }
 
