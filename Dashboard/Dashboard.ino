@@ -1,7 +1,24 @@
+#include <Servo.h> 
+
+
 int ON = 1;
 int OFF = 0;
 int cont;
 
+int VMotorRPM = 1;
+int VMotorVELO = 1;
+
+
+Servo motorRPM;
+Servo motorVELO;
+
+pinMode(VMotorRPM, OUTPUT);
+pinMode(VMotorVELO, OUTPUT);
+
+motorRPM.attach(VMotorRPM);
+motorVELO.attach(VMotorVELO);
+
+//motorRPM.write(GRAUS);
 
 //dÈfinition des broches du dÈcodeur 7 segments (vous pouvez changer
 
@@ -190,9 +207,6 @@ void loop() {
     d1 = bufferArray[5];		// store high byte of speed
     d2 = bufferArray[6];		// store low byte of speed
     carspeed = ((d1<<8) + d2);          // concatonate bytes (shift 8 bits)
-    centaine = carspeed / 100; 
-    dizaine  = (carspeed - (centaine*100)) / 10;
-    unite = carspeed - (centaine*100) - (dizaine*10);
     speeddata=1;                        // we got new data!
   }
 
@@ -232,24 +246,15 @@ void loop() {
   }
 
   if (speeddata == 1) 
-  {//affichage de la vitesse avec chaque digit pour centaine/dizaine/unite
-    display7int(1, 0);
-    display7int(2, 0);
-    display7int(3, 0);
-    
-    display7int(1, centaine);
-    display7int(2, dizaine);
-    display7int(3, unite);
-    
+  {
+    setVELO(carspeed);
     delay(10);
     speeddata=0;
   }    
 
   if (rpmdata == 1) 
   {
-    //entender esta linha
-    module1.setDisplayToDecNumber(rpm, 0, false);//displays numerical the speed
-
+    setRPM(rpm);
     rpmleds = map(rpm,0,rpmmax,0,9);    // distributes the rpm level to the 8 leds + 1 for shift change
 
     if (rpmleds==0){ 
@@ -400,4 +405,17 @@ void limpaDisplay(){
 
 void barraLED(int led, int estado){
   
+}
+
+
+void setVELO(int velo){
+  int r;
+  r = (velo*180)/310;
+  motorVELO.write(r);
+}
+
+void setRPM(int rpm){
+  int r;
+  r = (rpm*180)/310;
+  motorRPM.write(r);
 }
