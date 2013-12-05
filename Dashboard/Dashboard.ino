@@ -2,15 +2,6 @@ int ON = 1;
 int OFF = 0;
 int cont;
 
-#include <TM1638.h> //can be downloaded from http://code.google.com/p/tm1638-library/
-
-
-
-// define a module on data pin 5, clock pin 4 and strobe pin 3
-
-TM1638 module1(5, 4, 3);
-
-
 
 //dÈfinition des broches du dÈcodeur 7 segments (vous pouvez changer
 
@@ -152,161 +143,95 @@ void setup() {
 
 
 void loop() {
+  unsigned long currentMillis = millis();
+  int i; 
+  char bufferArray[20];              // holds all serial data into a array
+  unsigned int rpm;                  //holds the rpm data (0-65535 size)
+  unsigned int rpmleds;              //holds the 8 leds values 
+  unsigned int rpmmax;               //retrieves from x-sim USO this value as parameter divided by 100
+  unsigned int carspeed;             //holds the speed data (0-65535 size)
+  byte gear;                         // holds gear value data
+  byte d1;                           // high byte temp variable
+  byte d2;                           // low byte temp variable
+  byte rpmdata = 0;                  // marker that new data are available
+  byte speeddata = 0;                // marker that new data are available
+  byte geardata = 0;                 // marker that new data are available
+  unsigned int blinkled = 0;
+  unsigned int centaine;
+  unsigned int dizaine;
+  unsigned int unite;
 
-unsigned long currentMillis = millis();
-
-int i; 
-
-char bufferArray[20];              // holds all serial data into a array
-
-unsigned int rpm;                  //holds the rpm data (0-65535 size)
-
-unsigned int rpmleds;              //holds the 8 leds values 
-
-unsigned int rpmmax;               //retrieves from x-sim USO this value as parameter divided by 100
-
-unsigned int carspeed;             //holds the speed data (0-65535 size)
-
-byte gear;                         // holds gear value data
-
-byte d1;                           // high byte temp variable
-
-byte d2;                           // low byte temp variable
-
-byte rpmdata = 0;                  // marker that new data are available
-
-byte speeddata = 0;                // marker that new data are available
-
-byte geardata = 0;                 // marker that new data are available
-
-unsigned int blinkled = 0;
-
-unsigned int centaine;
-
-unsigned int dizaine;
-
-unsigned int unite;
-
-
-
-if (Serial.available() >= 9)  {    //if 6 bytes available in the Serial buffer...
-
-       for (i=0; i<9; i++) {			// for each byte
-
-       bufferArray[i] = Serial.read();     	// put into array
-
-      } 
-
+  if (Serial.available() >= 9)  
+  {    //if 6 bytes available in the Serial buffer...
+    for (i=0; i<9; i++) 
+    {			// for each byte
+      bufferArray[i] = Serial.read();     	// put into array
+    } 
   }
 
+  digitalWrite(13, LOW);
+  delay(10);
+  digitalWrite(13, HIGH);      
 
+  Serial.flush();
 
-digitalWrite(13, LOW);
-
-delay(10);
-
-digitalWrite(13, HIGH);      
-
-Serial.flush();
-
- 
-
-if (bufferArray[0] == 'R' ){		// if new bytes have been recieved
-
-
-
+  if (bufferArray[0] == 'R' )
+  {		// if new bytes have been recieved
     d1 = bufferArray[1];		// store high byte of rpm
-
     d2 = bufferArray[2];		// store low byte of rpm 
-
     rpm = ((d1<<8) + d2);               // concatonate bytes (shift 8 bits)
-
     rpmmax = bufferArray[3];            // retrieves the maxrpm value 
-
     rpmmax = (rpmmax * 100)+2000;       // multiplies the rpm data into thousants
-
     rpmdata=1;                          // we got new data!
+  }
 
-}
-
-if (bufferArray[4] == 'S' ){
-
+  if (bufferArray[4] == 'S' )
+  {
     d1 = bufferArray[5];		// store high byte of speed
-
     d2 = bufferArray[6];		// store low byte of speed
-
     carspeed = ((d1<<8) + d2);          // concatonate bytes (shift 8 bits)
-
     centaine = carspeed / 100; 
-
     dizaine  = (carspeed - (centaine*100)) / 10;
-
     unite = carspeed - (centaine*100) - (dizaine*10);
-
     speeddata=1;                        // we got new data!
+  }
 
-}
-
-if (bufferArray[7] == 'G' ){
-
+  if (bufferArray[7] == 'G' )
+  {
     gear = bufferArray[8];         // retrieves the single byte of gear (0-255 value)
-
     geardata=1;                    // we got new data!
+  }  
 
-}  
-
-if (geardata == 1) {
-
+  if (geardata == 1)
+  {
     gear = gear - 127;                  // offset the 0 value in 8-bit 
-
-    if (gear >= 1 and gear <10 ){
-
-        afficher(gear);//appel de la fonction affichage avec envoi du nombre ‡ afficher
-
+    if (gear >= 1 and gear <10 )
+    {
+      afficher(gear);//appel de la fonction affichage avec envoi du nombre ‡ afficher
+    }
+    if (gear == 0)
+    {//Pour aficher neutral le caractere g de l`afficheur est bas et les autres haut
+      digitalWrite(bit_A, HIGH);
+      digitalWrite(bit_B, HIGH);
+      digitalWrite(bit_C, HIGH);
+      digitalWrite(bit_D, HIGH);
+      digitalWrite(bit_E, LOW);
+      digitalWrite(bit_F, HIGH);
     }
 
-    if (gear == 0){//Pour aficher neutral le caractere g de l`afficheur est bas et les autres haut
-
-	digitalWrite(bit_A, HIGH);
-
-	digitalWrite(bit_B, HIGH);
-
-	digitalWrite(bit_C, HIGH);
-
-	digitalWrite(bit_D, HIGH);
-
-	digitalWrite(bit_E, LOW);
-
-	digitalWrite(bit_F, HIGH);
-
+    if (gear == 255)
+    {                        // -1 that reprecents reverse rollover to 255 so...
+      digitalWrite(bit_A, HIGH);
+      digitalWrite(bit_B, HIGH);
+      digitalWrite(bit_C, HIGH);
+      digitalWrite(bit_D, HIGH);
+      digitalWrite(bit_E, LOW);
+      digitalWrite(bit_F, LOW);
     }
-
-    if (gear == 255){                        // -1 that reprecents reverse rollover to 255 so...
-
-        // displays the character for reverse
-
-	digitalWrite(bit_A, HIGH);
-
-	digitalWrite(bit_B, HIGH);
-
-	digitalWrite(bit_C, HIGH);
-
-	digitalWrite(bit_D, HIGH);
-
-	digitalWrite(bit_E, LOW);
-
-	digitalWrite(bit_F, LOW);
-
-    }
-
     geardata=0;
+  }
 
-}
-
-
-
-if (speeddata == 1) {//affichage de la vitesse avec chaque digit pour centaine/dizaine/unite
-
+  if (speeddata == 1) {//affichage de la vitesse avec chaque digit pour centaine/dizaine/unite
       module1.clearDisplayDigit(0, false);
 
       module1.clearDisplayDigit(1, false);
@@ -318,7 +243,6 @@ if (speeddata == 1) {//affichage de la vitesse avec chaque digit pour centaine/d
       module1.setDisplayDigit(dizaine, 1, false);
 
       module1.setDisplayDigit(unite, 2, false);
-
       delay(10);
 
       speeddata=0;
