@@ -231,181 +231,160 @@ void loop() {
     geardata=0;
   }
 
-  if (speeddata == 1) {//affichage de la vitesse avec chaque digit pour centaine/dizaine/unite
-      module1.clearDisplayDigit(0, false);
+  if (speeddata == 1) 
+  {//affichage de la vitesse avec chaque digit pour centaine/dizaine/unite
+    display7int(1, 0);
+    display7int(2, 0);
+    display7int(3, 0);
+    
+    display7int(1, centaine);
+    display7int(2, dizaine);
+    display7int(3, unite);
+    
+    delay(10);
+    speeddata=0;
+  }    
 
-      module1.clearDisplayDigit(1, false);
-
-      module1.clearDisplayDigit(2, false);
-
-      module1.setDisplayDigit(centaine, 0, false);
-
-      module1.setDisplayDigit(dizaine, 1, false);
-
-      module1.setDisplayDigit(unite, 2, false);
-      delay(10);
-
-      speeddata=0;
-
-}    
-
-if (rpmdata == 1) {
-
+  if (rpmdata == 1) 
+  {
+    //entender esta linha
     module1.setDisplayToDecNumber(rpm, 0, false);//displays numerical the speed
 
     rpmleds = map(rpm,0,rpmmax,0,9);    // distributes the rpm level to the 8 leds + 1 for shift change
 
     if (rpmleds==0){ 
-
-      module1.setLEDs(0b00000000 | 0b00000000 << 8);
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
     }
 
     if (rpmleds==1){
-
-      module1.setLEDs(0b00000000 | 0b00000001 << 8 );
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
     }
 
     if (rpmleds==2){
-
-      module1.setLEDs(0b00000000 | 0b00000011 << 8 );
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
     }
 
     if (rpmleds==3){
-
-      module1.setLEDs(0b00000000 | 0b00000111 << 8 );
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
+      barraLED(3, ON);
     }
 
     if (rpmleds==4){
-
-      module1.setLEDs(0b00000000 | 0b00001111 << 8);
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
+      barraLED(3, ON);
+      barraLED(4, ON);
     }
 
     if (rpmleds==5){
-
-      module1.setLEDs(0b00000000 | 0b00011111 << 8);
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
+      barraLED(3, ON);
+      barraLED(4, ON);
+      barraLED(5, ON);
     }
 
     if (rpmleds==6){
-
-      module1.setLEDs(0b00100000 | 0b00011111 << 8 );
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
+      barraLED(3, ON);
+      barraLED(4, ON);
+      barraLED(5, ON);
+      barraLED(6, ON);
     }
 
     if (rpmleds==7){
-
-      module1.setLEDs(0b01100000 | 0b00011111 <<8 );
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
+      }
+      barraLED(1, ON);
+      barraLED(2, ON);
+      barraLED(3, ON);
+      barraLED(4, ON);
+      barraLED(5, ON);
+      barraLED(6, ON);
+      barraLED(7, ON);
     }
 
     if (rpmleds==8){
-
-       //blinkled++;
-
-      //module.setLEDs(0b11100000 | 0b000011111<<8 );}
-
-      //if (blinkled > 100){
-
-      module1.setLEDs(0b00000000 | 0b00000000 << 8);
-
-      //delay(20);
-
-      //}
-
-      //if (blinkled > 200){
-
-      if(currentMillis - previousMillis > interval) {
-
-    // save the last time you blinked the LED 
-
-       previousMillis = currentMillis;
-
-       module1.setLEDs(0b11111111 | 0b11111111 << 8 );
-
-      } 
-
-    rpmdata=0;
-
+      for (cont=1;cont<=8;cont++){
+        barraLED(cont, OFF);
       }
+      if(currentMillis - previousMillis > interval) 
+      {
+        previousMillis = currentMillis;
+        for (cont=1;cont<=8;cont++){
+          barraLED(cont, ON);
+        }
+      } 
+      rpmdata=0;
+    }
 
-} 
-
-}
+  } 
+}//Fim do loop
 
 //fonction Ècrivant sur un seul afficheur
 
 void afficher(char chiffre)
 
 {
-
   //Les broches sont toutes mises ‡ l'Ètat bas et haut neutral reverse
-
   digitalWrite(bit_A, LOW);
-
   digitalWrite(bit_B, LOW);
-
   digitalWrite(bit_C, LOW);
-
   digitalWrite(bit_D, LOW);
-
   digitalWrite(bit_E, HIGH);
-
   digitalWrite(bit_F, HIGH);
-
   //on allume les chiffres necessaires
-
   if(chiffre >= 8)
-
   {
-
     digitalWrite(bit_D, HIGH);
-
     chiffre= chiffre - 8;
-
-    }
-
+  }
   if(chiffre>= 4)
-
   {
-
     digitalWrite(bit_C, HIGH);
-
-  chiffre= chiffre - 4;
-
+    chiffre= chiffre - 4;
   }
-
   if(chiffre >= 2)
-
   {
-
     digitalWrite(bit_B, HIGH);
-
     chiffre= chiffre - 2;
-
   }
-
   if(chiffre >= 1)
-
   {
-
     digitalWrite(bit_A, HIGH);
-
     chiffre= chiffre - 1;
-
   }
-
 }
 
 
 //#################
 //Novas Funcoes
 
-void display7int(int n){
+void display7int(int n, int valor){
   
   
 }
