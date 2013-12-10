@@ -5,6 +5,7 @@ int ON = 1;
 int OFF = 0;
 int cont;
 int marcha;
+int ivan = 24;
 
 int VMotorRPM = 11;
 int VMotorVELO = 10;
@@ -13,20 +14,13 @@ int latchpin = 8;
 int clockpin = 4;
 int datapin = 7;
 
-//int linha1 = 2;
-//int linha2 = 3;
-//int linha3 = 4;
-//int coluna1 = 5;
-//int coluna2 = 6;
-//int coluna3 = 7;
+int latchpin2 = 2;
+int clockpin2 = 3;
+int datapin2 = 4;
 
 Servo motorRPM;
 Servo motorVELO;
 
-
-
-motorRPM.attach(VMotorRPM);
-motorVELO.attach(VMotorVELO);
 
 //motorRPM.write(GRAUS);
 
@@ -55,53 +49,40 @@ void setup() {
   pinMode(latchpin, OUTPUT);
   pinMode(clockpin, OUTPUT);
   pinMode(datapin, OUTPUT);
+  
+  motorRPM.attach(VMotorRPM);
+  motorVELO.attach(VMotorVELO);
 
-  barraLED(1, ON);
-  barraLED(8, ON);
-
-  delay(50);
-
-  barraLED(2, ON);
-  barraLED(7, ON);
+  //10000001
+  barraLED(129);
 
   delay(50);
-
-  barraLED(3, ON);
-  barraLED(6, ON);
-
-  delay(50);
-
-  barraLED(4, ON);
-  barraLED(5, ON);
+  
+  //01000010
+  barraLED(66);
 
   delay(50);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, OFF);
-  }
+  //00100100
+  barraLED(36);
+
+  delay(50);
+  //00011000
+  barraLED(ivan);
+
+  delay(50);
+    barraLED(0);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, ON);
-  }
+    barraLED(255);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, OFF);
-  }
+    barraLED(0);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, ON);
-  }
+    barraLED(255);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, OFF);
-  }
+    barraLED(0);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, ON);
-  }
+    barraLED(255);
   delay(200);
-  for (cont=1;cont<=8;cont++){
-    barraLED(cont, OFF);
-  }
+    barraLED(0);
   delay(1500);
 }
 
@@ -183,91 +164,43 @@ void loop() {
     rpmleds = map(rpm,0,rpmmax,0,9);    // distributes the rpm level to the 8 leds + 1 for shift change
 
     if (rpmleds==0){ 
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
+      barraLED(0);
     }
 
     if (rpmleds==1){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
+      barraLED(1);
     }
 
     if (rpmleds==2){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
+      barraLED(3);
     }
 
     if (rpmleds==3){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
-      barraLED(3, ON);
+      barraLED(7);
     }
 
     if (rpmleds==4){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
-      barraLED(3, ON);
-      barraLED(4, ON);
+      barraLED(15);
     }
 
     if (rpmleds==5){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
-      barraLED(3, ON);
-      barraLED(4, ON);
-      barraLED(5, ON);
+      barraLED(31);
     }
 
     if (rpmleds==6){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
-      barraLED(3, ON);
-      barraLED(4, ON);
-      barraLED(5, ON);
-      barraLED(6, ON);
+      barraLED(63);
     }
 
     if (rpmleds==7){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
-      barraLED(1, ON);
-      barraLED(2, ON);
-      barraLED(3, ON);
-      barraLED(4, ON);
-      barraLED(5, ON);
-      barraLED(6, ON);
-      barraLED(7, ON);
+      barraLED(127);
     }
 
     if (rpmleds==8){
-      for (cont=1;cont<=8;cont++){
-        barraLED(cont, OFF);
-      }
+      barraLED(127);
       if(currentMillis - previousMillis > interval) 
       {
         previousMillis = currentMillis;
-        for (cont=1;cont<=8;cont++){
-          barraLED(cont, ON);
-        }
+        barraLED(255);
       } 
       rpmdata=0;
     }
@@ -275,19 +208,10 @@ void loop() {
   } 
 }//Fim do loop
 
-
-void display7int(int n, int valor){
-  
-  
-}
-
-void display7str(String text){
-  
-  
-}
-
 void limpaDisplay(){
-  
+  digitalWrite(latchpin, LOW);
+  shiftOut(datapin, clockpin, MSBFIRST, 0);
+  digitalWrite(latchpin, HIGH);
 }
 
 void displayMARCHA(int marcha)
@@ -325,8 +249,10 @@ void displayMARCHA(int marcha)
   digitalWrite(latchpin, HIGH);
 }
 
-void barraLED(int led, int estado){
-  
+void barraLED(int leds){
+  digitalWrite(latchpin2, LOW);
+  shiftOut(datapin2, clockpin2, MSBFIRST, leds);
+  digitalWrite(latchpin2, HIGH);
 }
 
 
