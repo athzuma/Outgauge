@@ -1,0 +1,154 @@
+int Rpm;
+int RpmLight;
+char kind_of_data;
+
+int latchpin = 8; // connect to pin 8 on the '595
+int clockpin = 4; // connect to pin 4 on the '595
+int datapin = 7; // connect to pin 7 on the '595
+
+
+void setup(){
+
+  pinMode(latchpin, OUTPUT);
+  pinMode(clockpin, OUTPUT);
+  pinMode(datapin, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop(){ 
+  //****************************** READ DATA FROM SERIAL ******************************
+  while (Serial.available() > 0)
+  {
+
+    kind_of_data = Serial.read();
+    if (kind_of_data == 'R' ) Read_Rpm();
+    
+  
+    digitalWrite(latchpin, LOW);
+    shiftOut(datapin, clockpin, MSBFIRST, RpmLight);
+    digitalWrite(latchpin, HIGH);
+  }
+}
+
+
+//****************************** READ DATA FROM SERIAL END ******************************
+
+
+void Read_Rpm(){
+
+  int Rpm = 0;
+  delay(2);
+  int Rpm100 = Serial.read();
+  delay(2);
+  int Rpm10 = Serial.read();
+  delay(2);
+  int Rpm1= Serial.read();
+  
+  Rpm100 = ((Rpm100)-48)*100;
+  Rpm10  = ((Rpm10)-48)*10;
+  Rpm1   = ((Rpm1)-48)*1;
+  if (Rpm10 < 0 && Rpm1 < 0){Rpm100 = Rpm100/100;Rpm10 = 0;Rpm1 = 0;}
+  if (Rpm1 < 0){Rpm100 = Rpm100/10;Rpm10 = Rpm10/10;Rpm1 = 0;}
+      
+  Rpm = Rpm100+Rpm10+Rpm1;
+  
+ 
+  if (Rpm > 108) { RpmLight = 0;} 
+  if (Rpm > 92 && Rpm <= 108) { RpmLight = 1;}
+  if (Rpm > 76 && Rpm <= 92) { RpmLight = 3;}  
+  if (Rpm > 60 && Rpm <= 76) { RpmLight = 7;}
+  if (Rpm > 54  && Rpm <= 60){ RpmLight = 15;}
+  if (Rpm > 48 && Rpm <= 54){ RpmLight = 31;}
+  if (Rpm > 32 && Rpm <= 48){ RpmLight = 63;}
+  if (Rpm > 16 && Rpm <= 32){ RpmLight = 127;}
+  if (Rpm > 0 && Rpm <= 10){ RpmLight = 255;}
+}
+
+
+
+
+
+int Gear;
+int GearLight = 0;
+
+char kind_of_data;
+
+int latchpin = 8;
+int clockpin = 4;
+int datapin = 7;
+
+
+void setup(){
+
+  pinMode(latchpin, OUTPUT);
+  pinMode(clockpin, OUTPUT);
+  pinMode(datapin, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop(){
+  //****************************** READ DATA FROM SERIAL ******************************
+  while (Serial.available() > 0)
+  {
+
+    kind_of_data = Serial.read();
+    if (kind_of_data == 'G' ) Read_Gear();
+
+    digitalWrite(latchpin, LOW);
+    shiftOut(datapin, clockpin, MSBFIRST, GearLight);
+    digitalWrite(latchpin, HIGH);
+}
+}
+
+
+//****************************** READ DATA FROM SERIAL END ******************************
+
+
+void Read_Gear(){
+
+  //int Gear = 0;
+  delay(2);
+  int Gear100 = Serial.read();
+  delay(2);
+  int Gear10 = Serial.read();
+  delay(2);
+  int Gear1= Serial.read();
+  
+  Gear100 = ((Gear100)-48)*100;
+  Gear10  = ((Gear10)-48)*10;
+  Gear1   = ((Gear1)-48)*1;
+  if (Gear10 < 0 && Gear1 < 0){Gear100 = Gear100/100;Gear10 = 0;Gear1 = 0;}
+  if (Gear < 0){Gear100 = Gear100/10;Gear10 = Gear10/10;Gear1 = 0;}
+      
+  Gear = Gear100+Gear10+Gear1;
+  Serial.println(Gear);
+ 
+  if (Gear < 127) {
+    GearLight = 80;
+  } //r - little r
+  if (Gear == 127) {
+    GearLight = 84;
+  } //n - little n
+  if (Gear == 149) {
+    GearLight = 6;
+  } //1
+  if (Gear == 170) {
+    GearLight = 91;
+  }   //2
+  if (Gear == 191) {
+    GearLight = 79;
+  } //3
+  if (Gear == 213) {
+    GearLight = 102;
+  } // 4
+  if (Gear == 234) {
+    GearLight = 109;
+  }// 5
+  if (Gear == 255) {
+    GearLight = 124;
+  }// 6
+
+}
+}
