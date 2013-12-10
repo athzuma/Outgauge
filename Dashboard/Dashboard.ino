@@ -1,6 +1,6 @@
 #include <Servo.h> 
 
-
+int marchaBIN = 0;
 int ON = 1;
 int OFF = 0;
 int cont;
@@ -9,18 +9,21 @@ int marcha;
 int VMotorRPM = 11;
 int VMotorVELO = 10;
 
-int linha1 = 2;
-int linha2 = 3;
-int linha3 = 4;
-int coluna1 = 5;
-int coluna2 = 6;
-int coluna3 = 7;
+int latchpin = 8;
+int clockpin = 4;
+int datapin = 7;
+
+//int linha1 = 2;
+//int linha2 = 3;
+//int linha3 = 4;
+//int coluna1 = 5;
+//int coluna2 = 6;
+//int coluna3 = 7;
 
 Servo motorRPM;
 Servo motorVELO;
 
-pinMode(VMotorRPM, OUTPUT);
-pinMode(VMotorVELO, OUTPUT);
+
 
 motorRPM.attach(VMotorRPM);
 motorVELO.attach(VMotorVELO);
@@ -45,6 +48,13 @@ long interval = 40;           // interval at which to blink (milliseconds)
 void setup() {
   //Serial.begin(125000); 
   Serial.begin(115200);
+  
+  pinMode(VMotorRPM, OUTPUT);
+  pinMode(VMotorVELO, OUTPUT);
+  
+  pinMode(latchpin, OUTPUT);
+  pinMode(clockpin, OUTPUT);
+  pinMode(datapin, OUTPUT);
 
   barraLED(1, ON);
   barraLED(8, ON);
@@ -156,18 +166,7 @@ void loop() {
 
   if (geardata == 1)
   {
-    if (gear == 0) {
-      displayRE();
-      //Re
-    }
-    if (gear == 1) {
-      displayMORTO();
-      //ponto morto
-    }
-    if (gear > 1) {
-      marcha = gear - 1;
-      displayMARCHA(marcha);
-    }
+    displayMARCHA(gear);
     geardata=0;
   }
 
@@ -291,8 +290,39 @@ void limpaDisplay(){
   
 }
 
-void displayMARCHA(){
+void displayMARCHA(int marcha)
+{
+  //Re = 0
+  //N = 1
+  // Marcha = gear -1
+  if (marcha == 0) {
+    marchaBIN = 80;
+  } //r - little r
+  if (marcha == 1) {
+    marchaBIN = 84;
+  } //n - little n
+  if (marcha == 2) {
+    marchaBIN = 6;
+  } //1
+  if (marcha == 3) {
+    marchaBIN = 91;
+  }   //2
+  if (marcha == 4) {
+    marchaBIN = 79;
+  } //3
+  if (marcha == 5) {
+    marchaBIN = 102;
+  } // 4
+  if (marcha == 6) {
+    marchaBIN = 109;
+  }// 5
+  if (marcha == 7) {
+    marchaBIN = 124;
+  }// 6
   
+  digitalWrite(latchpin, LOW);
+  shiftOut(datapin, clockpin, MSBFIRST, marchaBIN);
+  digitalWrite(latchpin, HIGH);
 }
 
 void barraLED(int led, int estado){
